@@ -169,4 +169,8 @@ class GhostGroup(object):
     def render(self, screen):
         for ghost in self:
             ghost.render(screen)
+            
+    #Returns list of ghosts
+    def getGhosts(self):
+        return self.ghosts
 
