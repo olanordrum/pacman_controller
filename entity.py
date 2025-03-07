@@ -95,6 +95,14 @@ class Entity(object):
             distances.append(vec.magnitudeSquared())
         index = distances.index(min(distances))
         return directions[index]
+    
+    def goalDirectionFlee(self, directions):
+        distances = []
+        for direction in directions:
+            vec =  self.node.position - self.goal  + self.directions[direction]*TILEWIDTH 
+            distances.append(vec.magnitudeSquared())
+        index = distances.index(max(distances))
+        return directions[index]
 
     def setStartNode(self, node):
         self.node = node
