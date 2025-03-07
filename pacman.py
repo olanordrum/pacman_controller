@@ -4,6 +4,7 @@ from vector import Vector2
 from constants import *
 from entity import Entity
 from sprites import PacmanSprites
+from heapq import heappush, heappop
 
 class Pacman(Entity):
     def __init__(self, node):
@@ -14,6 +15,13 @@ class Pacman(Entity):
         self.setBetweenNodes(LEFT)
         self.alive = True
         self.sprites = PacmanSprites(self)
+        
+        self.directionMethod = self.goalDirectionFlee
+        self.goal = Vector2()
+        
+
+
+        
 
     def reset(self):
         Entity.reset(self)
@@ -26,11 +34,42 @@ class Pacman(Entity):
     def die(self):
         self.alive = False
         self.direction = STOP
+        
+    def update(self, dt):
+        self.sprites.update(dt)
+        
+        closetsGhost = self.getClosestGhost()
+        print(closetsGhost)
+        
+        self.position += self.directions[self.direction]*self.speed*dt
+        
+        self.goal = closetsGhost.position
+         
+        if self.overshotTarget():
+            self.node = self.target
+            directions = self.validDirections()
+            direction = self.directionMethod(directions)
+            if not self.disablePortal:
+                if self.node.neighbors[PORTAL] is not None:
+                    self.node = self.node.neighbors[PORTAL]
+            self.target = self.getNewTarget(direction)
+            if self.target is not self.node:
+                self.direction = direction
+            else:
+                if self.oppositeDirection(direction):
+                   self.reverseDirection()
 
-    def update(self, dt):	
+            self.setPosition()
+
+    def update2(self, dt):	
         self.sprites.update(dt)
         self.position += self.directions[self.direction]*self.speed*dt
-        direction = self.getValidKey()
+        
+        ghostList = self.ghosts.getGhosts()
+        self.goal = ghostList[0].position
+        
+        direction = self.goal
+        
         if self.overshotTarget():
             self.node = self.target
             if self.node.neighbors[PORTAL] is not None:
@@ -66,6 +105,39 @@ class Pacman(Entity):
         if dSquared <= rSquared:
             return True
         return False
+    
+    
+    # My codes
+    def setGhosts(self,ghosts):
+        self.ghosts = ghosts
+        
+        
+    def getClosestGhost(self):
+        self.setGhosts
+        ghosts = self.ghosts
+        
+        pacman_pos = self.position.asTuple()  # Hent Pac-Man sin posisjon som en tuple
+
+        if not ghosts:  # Sjekk om det er noen spøkelser i det hele tatt
+            return None
+
+    # Finn spøkelset med lavest Manhattan-avstand
+        closest_ghost = min(ghosts, key=lambda ghost: self.heuristic(pacman_pos, ghost.position.asTuple()))
+    
+        return closest_ghost
+        
+        
+        
+        
+    
+    def heuristic(self,node1, node2):
+    # manhattan distance
+        return abs(node1[0] - node2[0]) + abs(node1[1] - node2[1])
+
+
+        
+    
+        
 
 
 '''
