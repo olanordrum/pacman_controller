@@ -61,6 +61,17 @@ class Ghost(Entity):
         self.setSpeed(100)
         self.directionMethod = self.goalDirection
         self.homeNode.denyAccess(DOWN, self)
+        
+    GHOST_NAMES = {
+        BLINKY: "Blinky",
+        PINKY: "Pinky",
+        INKY: "Inky",
+        CLYDE: "Clyde",
+        FRUIT: "Fruit"
+    }
+
+    def __str__(self):
+        return self.GHOST_NAMES.get(self.name, f"Unknown Ghost ({self.name})")
 
 
 
@@ -173,4 +184,7 @@ class GhostGroup(object):
     #Returns list of ghosts
     def getGhosts(self):
         return self.ghosts
+    
+    def getGhostPos(self):
+        return [ghost.position for ghost in self.ghosts]
 
