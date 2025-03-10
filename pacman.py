@@ -5,6 +5,7 @@ from constants import *
 from entity import Entity
 from sprites import PacmanSprites
 from heapq import heappush, heappop
+from pellets import PelletGroup,Pellet
 
 class Pacman(Entity):
     def __init__(self, node):
@@ -15,12 +16,14 @@ class Pacman(Entity):
         self.setBetweenNodes(LEFT)
         self.alive = True
         self.sprites = PacmanSprites(self)
+    
         
         self.directionMethod = self.goalDirectionFlee
         self.goal = Vector2()
         
-
-
+        #States
+        self.states = [SEEKPELLET,SEEKGHOST,FLEE]
+        self.myState = SEEKPELLET #Current state
         
 
     def reset(self):
@@ -38,12 +41,17 @@ class Pacman(Entity):
     def update(self, dt):
         self.sprites.update(dt)
         
-        closetsGhost = self.getClosestGhost()
+    
+        #Update 
+        self.stateChecker()
+        
+        #Find closest ghost
+        closetsGhost = self.getClosestNode(self.ghostpositions)
         print(closetsGhost)
         
         self.position += self.directions[self.direction]*self.speed*dt
         
-        self.goal = closetsGhost.position
+        self.goal = closetsGhost
          
         if self.overshotTarget():
             self.node = self.target
@@ -107,32 +115,72 @@ class Pacman(Entity):
         return False
     
     
-    # My codes
-    def setGhosts(self,ghosts):
+    # My code
+    def setGhosts(self,ghosts):        
         self.ghosts = ghosts
+        self.ghostpositions = [ghost.position for ghost in self.ghosts] 
+        
+    
+    def setPellets(self,pellets: PelletGroup):
+        self.pellets = pellets.pelletList
+        self.pelletpositions = [pellet.position for pellet in self.pellets]
         
         
-    def getClosestGhost(self):
-        self.setGhosts
-        ghosts = self.ghosts
+        #Finds the closest ghost to pacman. Using manhattan
+    def getClosestPellet(self):
+        self.setPellets
+        pellets = self.pellets
         
-        pacman_pos = self.position.asTuple()  # Hent Pac-Man sin posisjon som en tuple
+        pacman_pos = self.position.asTuple()  #Get pacman pos as tuple
+        
+        visible_pellets = (pellet.position for pellet in pellets if pellet.visible)
+        
 
-        if not ghosts:  # Sjekk om det er noen spøkelser i det hele tatt
+        if not pellets: 
             return None
 
-    # Finn spøkelset med lavest Manhattan-avstand
-        closest_ghost = min(ghosts, key=lambda ghost: self.heuristic(pacman_pos, ghost.position.asTuple()))
+        closest_pellet = min(visible_pellets, key=lambda pellet: self.heuristic(pacman_pos, pellet.asTuple()))
+        return closest_pellet
     
-        return closest_ghost
-        
-        
+    
+    
+    
+    #Takes a list of nodes and returns the closest one to pacman
+    def getClosestNode(self,nodes):
+        pacman_pos = self.position.asTuple()  #Get pacman pos as tuple
+
+        if not nodes: 
+            return None
+
+    
+        closest_node = min(nodes, key=lambda node: self.heuristic(pacman_pos, node.asTuple()))
+        return closest_node
         
         
     
     def heuristic(self,node1, node2):
     # manhattan distance
         return abs(node1[0] - node2[0]) + abs(node1[1] - node2[1])
+    
+    
+        
+    
+    
+    #Statchecker
+    def stateChecker(self):
+        print("MY STATE: ", self.myState)
+        if self.myState == SEEKPELLET:
+            print("\n SEEK \n")
+            self.directionMethod = self.seekPellet #A*
+            
+        elif self.myState == SEEKGHOST:
+            print("\n FLEE \n")
+            self.directionMethod = self.goalDirection
+            
+        elif self.myState == FLEE:
+            print("\n WANDER \n")
+            self.directionMethod = self.goalDirectionFlee
+            
 
 
         

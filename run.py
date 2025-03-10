@@ -76,6 +76,8 @@ class GameController(object):
         self.ghosts.clyde.startNode.denyAccess(LEFT, self.ghosts.clyde)
         self.mazedata.obj.denyGhostsAccess(self.ghosts, self.nodes)
 
+
+##### OLD  
     def startGame_old(self):      
         self.mazedata.loadMaze(self.level)#######
         self.mazesprites = MazeSprites("maze1.txt", "maze1_rotation.txt")

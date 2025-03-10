@@ -103,6 +103,16 @@ class Entity(object):
             distances.append(vec.magnitudeSquared())
         index = distances.index(max(distances))
         return directions[index]
+    
+    def seekPellet(self, directions):
+        self.goal = self.getClosestPellet()
+        print("\n\nPelletGoal: ",self.goal,"\n")
+        distances = []
+        for direction in directions:
+            vec = self.node.position  + self.directions[direction]*TILEWIDTH - self.goal
+            distances.append(vec.magnitudeSquared())
+        index = distances.index(min(distances))
+        return directions[index]
 
     def setStartNode(self, node):
         self.node = node
