@@ -15,18 +15,53 @@ class StateMachine(object):
         res = False
         for ghost in self.pacman.ghosts:
           dist = self.pacman.dist(ghost.node.position.asTuple(),self.pacman.position.asTuple())
-          if dist < 150:
+          if dist < 100:
             res = True
         return res
       
-  
+      
     def checkEvent(self, dt):
+        self.pacman.updatePowerPellets()
+        
+        # Eaten pellet
+        pellet = self.pacman.eatPellets(self.pacman.allPowerPellets)  
+        
+        # Ghost close bool
+        close = self.ghostClose()
+
+        # Hvis Pac-Man har spist en power pellet, aktiver SEEKGHOST uansett
+        if pellet is not None and pellet.alive:
+            pellet.alive = False
+            print(f"DEBUG: Power pellet spist: {pellet.position}")
+            self.time = 5  # Riktig tid
+            self.pacman.myState = SEEKGHOST
+
+        # Hvis vi er i SEEKGHOST, tell ned tiden
+        if self.pacman.myState == SEEKGHOST:
+            self.time -= dt  
+            if self.time <= 0:
+                self.pacman.myState = SEEKPOWERPELLET
+
+        # Hvis Pac-Man er for nærme et spøkelse og IKKE i SEEKGHOST, aktiver FLEE
+        if close and self.pacman.myState not in [SEEKGHOST, FLEE]:
+            self.pacman.myState = FLEE
+            self.flee_time = 5  # Resetter FLEE-tid
+
+        # Hvis vi er i FLEE, sjekk om vi kan stoppe
+        if self.pacman.myState == FLEE:
+            self.flee_time -= dt
+            if self.flee_time <= 0 or not close:
+                self.pacman.myState = SEEKPOWERPELLET
+                
+                
+  
+    def checkEvent2(self, dt):
       self.pacman.updatePowerPellets()
       
       #Eaten pellet
       pellet = self.pacman.eatPellets(self.pacman.allPowerPellets)  
       
-      print("\n PELLET :", pellet)
+      print("\n PELLET EATEN :", pellet)
       
       #Ghost close bool
       close = self.ghostClose()
@@ -48,133 +83,14 @@ class StateMachine(object):
               self.pacman.myState = SEEKPOWERPELLET
 
       #Eaten power pellet?
-      if pellet is not None:
-              if pellet.visible:
-                print(f"DEBUG: Power pellet spist: {pellet.position}")
-                self.time = 7
-                self.pacman.myState = SEEKGHOST
-          
-          
-      
-              
-              
-    def checkEvent2(self, dt):
-      self.pacman.updatePowerPellets()
-     
-      print("pellet list:", self.pacman.pellets )
-      pellet = self.pacman.eatPellets(self.pacman.pellets)  
-      print ("PELLET: ",pellet)
-      
-      
-      if pellet is None:
-            print("PELLET EATEN")
+      if pellet is not None and pellet.alive:
+            pellet.alive = False
+            print(f"DEBUG: Power pellet spist: {pellet.position}")
+            print("PELLET ALIVE:", pellet.alive)
             self.time = 7
             self.pacman.myState = SEEKGHOST
-      
-      
-      
-      #Ghost close bool
-      close = self.ghostClose()
-      
-      if self.pacman.myState == SEEKGHOST:
-          self.time -= dt
           
-          if self.time <= 0: # seek times up
-              self.pacman.myState = SEEKPOWERPELLET
-          
-          if pellet != None:
-              self.time = 7
-              self.pacman.myState = SEEKGHOST
-              
-              
-      elif self.pacman.myState == SEEKPOWERPELLET:
-          self.pacman.updatePowerPellets()
-          if close:
-              self.pacman.myState = FLEE
-          
-          if pellet != None:
-              self.time = 7
-              self.pacman.myState = SEEKGHOST
-              
-      elif self.pacman.myState == FLEE:
-           if not close:
-             self.pacman.myState = SEEKPOWERPELLET
-             
-           if pellet is not None:
-              print("PELLET EATEN")
-              self.time = 7
-              self.pacman.myState = SEEKGHOST
-            
-
     
-    
-    
-    
-    
-  
-  
-  
-  
-'''  
-    def checkEvent(self,dt):
-        self.pacman.updatePowerPellets()
-        
-        
-        
-        if self.pacman.state == SEEKPOWERPELLET:
-            if self.ghostClose:
-                self.state = FLEE
-                
-                
-            # Eat powerpellet
-            if self.pacman.eatPellets(self.pacman.allPowerPellets) != None:
-                self.time = 7
-                self.state = SEEKGHOST
-                self.pacman.setState(SEEKGHOST)
-                
-                
-                
-                
-                
-            
-        elif self.state == SEEKGHOST:
-          
-            if self.time <= 0:
-                self.state = SEEKPOWERPELLET
-                self.pacman.setState(SEEKPOWERPELLET)
-                
-            # Eat power pellet
-            if self.pacman.eatPellets(self.pacman.allPowerPellets) != None:
-                self.time = 7
-                self.state = SEEKGHOST
-                self.pacman.setState(SEEKGHOST)
-                    
-            #Check time
-            else:
-              self.time -= dt
-              
-              
-              
-        elif self.state ==  FLEE:
-              if not self.ghostClose:
-                self.state = SEEKPOWERPELLET
-                self.pacman.setState(SEEKPOWERPELLET)
-                
-                
-              #EAT PELLET
-              if self.pacman.eatPellets(self.pacman.allPowerPellets) != None:
-                self.time = 7
-                self.state = SEEKGHOST
-                self.pacman.setState(SEEKGHOST)
-                
-  '''  
-                
-
-          
-                
-          
-                    
-                    
         
           
             
