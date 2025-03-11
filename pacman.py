@@ -56,12 +56,13 @@ class Pacman(Entity):
         
         
     def update(self, dt):
-        print("GOAL: ", self.goal)
+        #print("GOAL: ", self.goal)
         self.sprites.update(dt)
         
         #self.goal = self.getClosestPowerPellet()
-        self.updatePowerPellets()
+        
         self.statemachine.checkEvent(dt)
+        self.updatePowerPellets()
         
         #Update 
         self.stateChecker()
@@ -116,7 +117,7 @@ class Pacman(Entity):
         
         
     def updatePowerPellets(self):
-        self.powerPellets = [pellet for pellet in self.pellets if pellet.visible and pellet.name == POWERPELLET]
+        self.powerPellets = [pellet for pellet in self.pellets if pellet.alive and pellet.name == POWERPELLET]
         
         
         #Finds the closest ghost to pacman. Using manhattan
@@ -139,7 +140,7 @@ class Pacman(Entity):
     def getClosestPowerPellet(self):
         pacman_pos = self.position.asTuple()  #Get pacman pos as tuple
         
-        visible_pellets = [pellet.position for pellet in self.powerPellets if pellet.visible and pellet.name == POWERPELLET]
+        visible_pellets = [pellet.position for pellet in self.powerPellets if pellet.alive and pellet.name == POWERPELLET]
         
         print("\n Visble power pellets: ", visible_pellets, "\n")
 
@@ -152,28 +153,12 @@ class Pacman(Entity):
     
     
     
-    '''
-    #Takes a list of nodes and returns the closest one to pacman
-    def getClosestNode(self,nodes):
-        pacman_pos = self.position.asTuple()  #Get pacman pos as tuple
 
-        if not nodes: 
-            return None
-        
-        closest_node = min(nodes, key=lambda node: self.dist(pacman_pos, node.asTuple()))
-        return closest_node    
-'''
     
     
     def dist(self,node1, node2):
     # manhattan distance
         return abs(node1[0] - node2[0]) + abs(node1[1] - node2[1])
-    
-    
-    
-    
-    def setState(self,state):
-        self.myState = state
     
 
         
@@ -253,18 +238,18 @@ class Pacman(Entity):
     def stateChecker(self):
         if self.myState == SEEKPOWERPELLET:
             if self.powerPellets:
-                print("\n POWERPELLET \n")
+                print("\n STATE: POWERPELLET \n")
                 self.directionMethod = self.seekPowerPellet
             else:
-                print("\n PELLET \n")
+                print("\n STATE: PELLET \n")
                 self.directionMethod = self.seekPellet #A*
             
         elif self.myState == SEEKGHOST:
-            print("\n SEEKGHOST \n")
+            print("\n STATE: SEEKGHOST \n")
             self.directionMethod = self.huntGhostAstar
             
         elif self.myState == FLEE:
-            print("\n FLEE \n")
+            print("\n STATE: FLEE \n")
             self.directionMethod = self.flee
             
             

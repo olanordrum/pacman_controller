@@ -21,14 +21,11 @@ def a_star (nodes, start, goal):
     while queue:
         cost, u = heappop(queue)
         
-        print("\n U: ", u)
-        
         #If the cost is the same, the new path is not any faster. and can therefor be skipped
         if cost != dist[u]:
             continue
         
         neighbors = nodes.getNeighbors(u)
-        print(neighbors)
         for v in neighbors:
             #Real cost to v
             c = trueDist[u] + 1

@@ -120,8 +120,6 @@ class Entity(object):
     
     def seekPellet(self, directions):
         self.goal = self.getClosestPellet()
-        print(self.powerPellets)
-        print("\n\nPelletGoal: ",self.goal,"\n")
         distances = []
         for direction in directions:
             vec = self.node.position  + self.directions[direction]*TILEWIDTH - self.goal
@@ -132,8 +130,7 @@ class Entity(object):
     
     
     def seekPowerPelletEasy(self, directions):
-        print(self.powerPellets)
-        print("\n\nPelletGoal: ",self.goal,"\n")
+        print("\n POWER PELLETS: ",self.powerPellets)
         distances = []
         for direction in directions:
             vec = self.node.position  + self.directions[direction]*TILEWIDTH - self.goal
@@ -168,9 +165,9 @@ class Entity(object):
         path = self.getAstarPath(start, goal)
         startprint = self.nodes.getPixelsFromNode(start)
         goalprint = self.nodes.getPixelsFromNode(goal)
-        print("Start: ", startprint)
-        print("Goal ", goalprint)
-        print("Path: ", path)
+        #print("Start: ", startprint)
+        #print("Goal ", goalprint)
+        #print("Path: ", path)
         
     
         target = self.nodes.getPixelsFromNode(goal)
@@ -185,16 +182,16 @@ class Entity(object):
         newGoal = Vector2(nextNode[0],nextNode[1]) - start.position
         
         
-        print("nextNode: ", nextNode)
+        #print("nextNode: ", nextNode)
         return self.getDirection(newGoal)
         
-        if target[0] > nextNode[0] and 2 in directions:  # left
+        if nextNode[0] > target[0] and 2 in directions:  # left
             return 2
-        if target[0] < nextNode[0] and -2 in directions:  # right
+        if nextNode[0] < target[0] and -2 in directions:  # right
             return -2
-        if target[1] > nextNode[1] and 1 in directions:  # up
+        if nextNode[1] > target[1] and 1 in directions:  # up
             return 1
-        if target[1] < nextNode[1] and -1 in directions:  # down
+        if nextNode[1] < target[1] and -1 in directions:  # down
             return -1
         else:
             print("MORN")
