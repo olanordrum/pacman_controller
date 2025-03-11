@@ -60,9 +60,8 @@ class Pacman(Entity):
         self.sprites.update(dt)
         
         #self.goal = self.getClosestPowerPellet()
-        
-        self.statemachine.checkEvent(dt)
         self.updatePowerPellets()
+        self.statemachine.checkEvent(dt)
         
         #Update 
         self.stateChecker()
@@ -130,6 +129,7 @@ class Pacman(Entity):
         
 
         if not visible_pellets: 
+            print("NONE PELLETS")
             return None
 
         closest_pellet = min(visible_pellets, key=lambda pellet: self.dist(pacman_pos, pellet.asTuple()))
@@ -139,11 +139,12 @@ class Pacman(Entity):
     def getClosestPowerPellet(self):
         pacman_pos = self.position.asTuple()  #Get pacman pos as tuple
         
-        visible_pellets = [pellet.position for pellet in self.allPowerPellets if pellet.visible and pellet.name == POWERPELLET]
+        visible_pellets = [pellet.position for pellet in self.powerPellets if pellet.visible and pellet.name == POWERPELLET]
         
         print("\n Visble power pellets: ", visible_pellets, "\n")
 
         if not visible_pellets: 
+            print("NONE POWER PELLETS")
             return None
 
         closest_pellet = min(visible_pellets, key=lambda pellet: self.dist(pacman_pos, pellet.asTuple()))
@@ -253,7 +254,7 @@ class Pacman(Entity):
         if self.myState == SEEKPOWERPELLET:
             if self.powerPellets:
                 print("\n POWERPELLET \n")
-                self.directionMethod = self.seekPowerPelletEasy
+                self.directionMethod = self.seekPowerPellet
             else:
                 print("\n PELLET \n")
                 self.directionMethod = self.seekPellet #A*
