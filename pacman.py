@@ -30,7 +30,7 @@ class Pacman(Entity):
         
         
         self.pellets = pellets.pelletList
-        self.pelletpositions = [pellet.position for pellet in self.pellets]
+        #self.pelletpositions = [pellet.position for pellet in self.pellets]
         self.allPowerPellets = pellets.powerpellets
         
         self.statemachine = StateMachine(self,self.myState )
@@ -45,6 +45,7 @@ class Pacman(Entity):
         self.image = self.sprites.getStartImage()
         self.sprites.reset()
         self.myState = SEEKPOWERPELLET
+        self.updatePowerPellets()
 
     def die(self):
         self.alive = False
@@ -112,13 +113,8 @@ class Pacman(Entity):
     # My code
     def setGhosts(self,ghosts):        
         self.ghosts = ghosts
-        self.ghostpositions = [ghost.position for ghost in self.ghosts] 
+
         
-    
-    def setPellets(self,pellets: PelletGroup):
-        self.pellets = pellets.pelletList
-        self.pelletpositions = [pellet.position for pellet in self.pellets if pellet.visible]
-        self.allPowerPellets = pellets.powerpellets
         
     def updatePowerPellets(self):
         self.powerPellets = [pellet for pellet in self.pellets if pellet.visible and pellet.name == POWERPELLET]
@@ -126,7 +122,6 @@ class Pacman(Entity):
         
         #Finds the closest ghost to pacman. Using manhattan
     def getClosestPellet(self):
-        #self.setPellets()
         pellets = self.pellets
         
         pacman_pos = self.position.asTuple()  #Get pacman pos as tuple
@@ -142,9 +137,6 @@ class Pacman(Entity):
     
     
     def getClosestPowerPellet(self):
-        #self.setPellets()
-        #pellets = self.pellets
-        
         pacman_pos = self.position.asTuple()  #Get pacman pos as tuple
         
         visible_pellets = [pellet.position for pellet in self.allPowerPellets if pellet.visible and pellet.name == POWERPELLET]
@@ -159,7 +151,7 @@ class Pacman(Entity):
     
     
     
-    
+    '''
     #Takes a list of nodes and returns the closest one to pacman
     def getClosestNode(self,nodes):
         pacman_pos = self.position.asTuple()  #Get pacman pos as tuple
@@ -168,9 +160,9 @@ class Pacman(Entity):
             return None
         
         closest_node = min(nodes, key=lambda node: self.dist(pacman_pos, node.asTuple()))
-        return closest_node
-        
-        
+        return closest_node    
+'''
+    
     
     def dist(self,node1, node2):
     # manhattan distance
@@ -245,7 +237,6 @@ class Pacman(Entity):
         if ghost.node == ghost.homeNode or ghost.node == ghost.spawnNode:
             return True
 
-        
         for key in ghost.node.neighbors:
             neighbor = ghost.node.neighbors[key]
             if neighbor == ghost.homeNode or neighbor == ghost.spawnNode:
@@ -256,10 +247,6 @@ class Pacman(Entity):
 
         
                 
-    
-    
-    
-    
     
          #Statchecker
     def stateChecker(self):
