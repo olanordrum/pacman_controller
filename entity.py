@@ -3,6 +3,9 @@ from pygame.locals import *
 from vector import Vector2
 from constants import *
 from random import randint
+from algorithms import a_star
+from random import choice
+
 
 class Entity(object):
     def __init__(self, node):
@@ -87,6 +90,10 @@ class Entity(object):
 
     def randomDirection(self, directions):
         return directions[randint(0, len(directions)-1)]
+    
+    
+    
+    #Direction methods
 
     def goalDirection(self, directions):
         distances = []
@@ -104,8 +111,16 @@ class Entity(object):
         index = distances.index(max(distances))
         return directions[index]
     
+    def huntGhostEasy(self,directions):
+        self.goal = self.nearbyGhost().position
+        
+        return self.goalDirection(directions)
+    
+    
+    
     def seekPellet(self, directions):
         self.goal = self.getClosestPellet()
+        print(self.powerPellets)
         print("\n\nPelletGoal: ",self.goal,"\n")
         distances = []
         for direction in directions:
@@ -113,6 +128,102 @@ class Entity(object):
             distances.append(vec.magnitudeSquared())
         index = distances.index(min(distances))
         return directions[index]
+    
+    
+    
+    def seekPowerPelletEasy(self, directions):
+        print(self.powerPellets)
+        print("\n\nPelletGoal: ",self.goal,"\n")
+        distances = []
+        for direction in directions:
+            vec = self.node.position  + self.directions[direction]*TILEWIDTH - self.goal
+            distances.append(vec.magnitudeSquared())
+        index = distances.index(min(distances))
+        return directions[index]
+    
+    
+    def getAstarPath(self,start, goal):
+        start = self.nodes.getPixelsFromNode(start)
+        pacTarget = self.nodes.getPixelsFromNode(goal)
+
+        # previous_nodes, shortest_path = dijkstra(self.nodes, pacTarget)
+        previous_nodes, shortest_path = a_star(
+            self.nodes, start, pacTarget
+        )
+        path = []
+        node = pacTarget
+        while node != None:
+            path.append(node)
+            node = previous_nodes[node]
+        #path.append(pacTarget)
+        path.reverse()
+        # print(path)
+        return path
+    
+   
+        
+        
+    def seekAstar(self,directions,start, goal):
+        start = start
+        path = self.getAstarPath(start, goal)
+        startprint = self.nodes.getPixelsFromNode(start)
+        goalprint = self.nodes.getPixelsFromNode(goal)
+        print("Start: ", startprint)
+        print("Goal ", goalprint)
+        print("Path: ", path)
+        
+    
+        target = self.nodes.getPixelsFromNode(goal)
+
+
+        #path.append(target)
+        if len(path) < 2 :
+            return self.getDirection(self.goal)
+
+        nextNode = path[1]
+        
+        newGoal = Vector2(nextNode[0],nextNode[1]) - start.position
+        
+        
+        print("nextNode: ", nextNode)
+        return self.getDirection(newGoal)
+        
+        if target[0] > nextNode[0] and 2 in directions:  # left
+            return 2
+        if target[0] < nextNode[0] and -2 in directions:  # right
+            return -2
+        if target[1] > nextNode[1] and 1 in directions:  # up
+            return 1
+        if target[1] < nextNode[1] and -1 in directions:  # down
+            return -1
+        else:
+            print("MORN")
+            print(self.direction)
+            print(directions)
+            if -1 * self.direction in directions:
+                return -1 * self.direction
+            else:
+                return choice(directions)
+            
+            
+            
+            
+    def getDirection(self, goal):
+        if abs(goal.x) > abs(goal.y):
+            if goal.x > 0:
+                return RIGHT  
+            else:
+                return LEFT  
+        else:
+            if goal.y > 0:
+                return DOWN  
+            else:
+                return UP 
+            
+
+
+
+
 
     def setStartNode(self, node):
         self.node = node

@@ -33,13 +33,14 @@ class NodeGroup(object):
     def __init__(self, level):
         self.level = level
         self.nodesLUT = {}
-        self.nodeSymbols = ['+', 'P', 'n']
+        self.nodeSymbols = ['+', 'P', 'n','p']
         self.pathSymbols = ['.', '-', '|', 'p']
         data = self.readMazeFile(level)
         self.createNodeTable(data)
         self.connectHorizontally(data)
         self.connectVertically(data)
         self.homekey = None
+
 
     def readMazeFile(self, textfile):
         return np.loadtxt(textfile, dtype='<U1')
@@ -109,6 +110,7 @@ class NodeGroup(object):
         self.connectHorizontally(homedata, xoffset, yoffset)
         self.connectVertically(homedata, xoffset, yoffset)
         self.homekey = self.constructKey(xoffset+2, yoffset)
+        
         return self.homekey
 
     def connectHomeNodes(self, homekey, otherkey, direction):     
@@ -162,3 +164,36 @@ class NodeGroup(object):
     def render(self, screen):
         for node in self.nodesLUT.values():
             node.render(screen)
+            
+    def getListOfNodesPixels(self):
+        return list(self.nodesLUT)
+
+    # returns a node in (x,y) format
+    def getPixelsFromNode(self, node):
+        id = list(self.nodesLUT.values()).index(node)
+        listOfPix = self.getListOfNodesPixels()
+        return listOfPix[id]
+            
+            
+    # returns neighbors of a node in LUT form
+    def getNeighborsObj(self, node):
+        node_obj = self.getNodeFromPixels(node[0], node[1])
+        return node_obj.neighbors
+    
+    def getNodeFromPixels(self, xpixel, ypixel):
+        if (xpixel, ypixel) in self.nodesLUT.keys():
+            return self.nodesLUT[(xpixel, ypixel)]
+        return None
+
+    # returns neighbors in (x,y) format
+    def getNeighbors(self, node):
+        neighs_obj = self.getNeighborsObj(node)
+        vals = neighs_obj.values()
+        neighs_obj2 = []
+        for direction in vals:
+            if direction is not None:
+                neighs_obj2.append(direction)
+        list_neighs = []
+        for neigh in neighs_obj2:
+            list_neighs.append(self.getPixelsFromNode(neigh))
+        return list_neighs

@@ -21,13 +21,14 @@ class Pellet(object):
 
 
 class PowerPellet(Pellet):
-    def __init__(self, row, column):
-        Pellet.__init__(self, row, column)
+    def __init__(self, row, columnn, node):
+        Pellet.__init__(self, row, columnn )
         self.name = POWERPELLET
         self.radius = int(8 * TILEWIDTH / 16)
         self.points = 50
         self.flashTime = 0.2
         self.timer= 0
+        self.node = node
         
     def update(self, dt):
         self.timer += dt
@@ -37,11 +38,13 @@ class PowerPellet(Pellet):
 
 
 class PelletGroup(object):
-    def __init__(self, pelletfile):
+    def __init__(self, pelletfile, nodes):
         self.pelletList = []
         self.powerpellets = []
+        self.nodes = nodes
         self.createPelletList(pelletfile)
         self.numEaten = 0
+        
 
     def update(self, dt):
         for powerpellet in self.powerpellets:
@@ -54,7 +57,9 @@ class PelletGroup(object):
                 if data[row][col] in ['.', '+']:
                     self.pelletList.append(Pellet(row, col))
                 elif data[row][col] in ['P', 'p']:
-                    pp = PowerPellet(row, col)
+                    pelletNode = self.nodes.getNodeFromTiles(col,row)
+                    print("\n pelletnode: " ,pelletNode)
+                    pp = PowerPellet(row, col, pelletNode)
                     self.pelletList.append(pp)
                     self.powerpellets.append(pp)
                     
