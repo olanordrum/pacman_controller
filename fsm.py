@@ -45,7 +45,7 @@ class StateMachine(object):
         # Hvis Pac-Man er for nærme et spøkelse og IKKE i SEEKGHOST, aktiver FLEE
         if close and self.pacman.myState not in [SEEKGHOST, FLEE]:
             self.pacman.myState = FLEE
-            self.flee_time = 5  # Resetter FLEE-tid
+            self.flee_time = 6  # Resetter FLEE-tid
 
         # Hvis vi er i FLEE, sjekk om vi kan stoppe
         if self.pacman.myState == FLEE:
