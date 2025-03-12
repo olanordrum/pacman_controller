@@ -7,6 +7,8 @@ from sprites import PacmanSprites
 from heapq import heappush, heappop
 from pellets import PelletGroup,Pellet
 from fsm import StateMachine
+from random import choice
+
 
 class Pacman(Entity):
     def __init__(self, node, nodes, pellets):
@@ -182,7 +184,9 @@ class Pacman(Entity):
     def nearbyGhost(self):
         queue = []
         count = 0
-        for ghost in self.ghosts:
+        ghostList = [ghost for ghost in self.ghosts]
+        
+        for ghost in ghostList:
             ret = ghost
             # If ghost is not in FREIGHT we cant eat it
             if self.homeNodes(ghost) or ghost.mode.current != FREIGHT:
@@ -195,7 +199,7 @@ class Pacman(Entity):
         if queue:
             return heappop(queue)[2]
         
-        return ret.node
+        return choice(ghostList).node
     
     # Find the closest power pellet
     def nearbyPowerPellet(self):

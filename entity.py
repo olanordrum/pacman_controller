@@ -175,30 +175,32 @@ class Entity(object):
 
         #path.append(target)
         if len(path) < 2 :
-            return self.getDirection(self.goal)
+            return self.getDirection(self.goal,directions)
 
         nextNode = path[1]
         
         newGoal = Vector2(nextNode[0],nextNode[1]) - start.position
         
 
-        return self.getDirection(newGoal)
+        return self.getDirection(newGoal,directions)
             
             
             
             
-    def getDirection(self, goal):
+    def getDirection(self, goal,directions):
         if abs(goal.x) > abs(goal.y):
             if goal.x > 0:
                 return RIGHT  
             else:
                 return LEFT  
-        else:
+        elif abs(goal.x) < abs(goal.y):
             if goal.y > 0:
                 return DOWN  
             else:
                 return UP 
-            
+        else:
+            print("------ RANDOM DIRECTION ---------")
+            return self.randomDirection(directions)
 
 
 
