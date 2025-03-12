@@ -44,9 +44,10 @@ class StateMachine(object):
         
         #Bool: power pellet distance < threshold
         closePP = self.pelletClose()
-        
+        #seek power pellet if its close
         if closePP:
-                self.pacman.myState = SEEKPOWERPELLET
+            self.pacman.myState = SEEKPOWERPELLET
+        
             
         # If pacman eats power pellet, seek ghost
         if pellet is not None and pellet.alive:
@@ -65,19 +66,14 @@ class StateMachine(object):
         # Check distance to closest ghost and if true, FLEE
         if close and self.pacman.myState not in [SEEKGHOST, FLEE]:
             self.pacman.myState = FLEE
-            self.flee_time = 6  # Resetter FLEE-tid
+            self.flee_time = 6  # Reset FLEE-tid
 
 
         # If flee-state, check if we should stop
         if self.pacman.myState == FLEE:
-            #seek power pellet if its close
-            if closePP:
-                self.pacman.myState = SEEKPOWERPELLET
-                
-            else:
-                self.flee_time -= dt
-                if self.flee_time <= 0 or not close:
-                    self.pacman.myState = SEEKPELLET
+            self.flee_time -= dt
+            if self.flee_time <= 0 or not close:
+                self.pacman.myState = SEEKPELLET
                 
           
     

@@ -179,14 +179,11 @@ class Entity(object):
 
         nextNode = path[1]
         
-        newGoal = Vector2(nextNode[0],nextNode[1]) - start.position
-        
+        next = Vector2(nextNode[0],nextNode[1]) - start.position
 
-        return self.getDirection(newGoal,directions)
-            
-            
-            
-            
+        return self.getDirection(next,directions)
+               
+               
     def getDirection(self, goal,directions):
         if abs(goal.x) > abs(goal.y):
             if goal.x > 0:
@@ -201,9 +198,6 @@ class Entity(object):
         else:
             print("------ RANDOM DIRECTION ---------")
             return self.randomDirection(directions)
-
-
-
 
 
     def setStartNode(self, node):

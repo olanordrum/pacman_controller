@@ -21,7 +21,8 @@ def a_star (nodes, start, goal):
     while queue:
         cost, u = heappop(queue)
         
-        #If the cost is the same, the new path is not any faster. and can therefor be skipped
+        #If cost is not the same as dist[u] we have found another faster way to u while u was in 
+        #cost is therefore outdated
         if cost != dist[u]:
             continue
         
@@ -41,8 +42,11 @@ def a_star (nodes, start, goal):
                 heappush(queue, (f_cost, v))
                 parents[v] = u
                 
+                if v == goal:
+                    return parents, trueDist
+                
 
-    return parents, dist
+    return parents, trueDist
 
 
 

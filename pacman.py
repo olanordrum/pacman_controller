@@ -193,13 +193,13 @@ class Pacman(Entity):
                 continue
 
             dist = (ghost.node.position - self.node.position).magnitudeSquared()
-            heappush(queue,(dist,count,ghost.node))
+            heappush(queue,(dist,count,ghost))
             count += 1
             
         if queue:
             return heappop(queue)[2]
         
-        return choice(ghostList).node
+        return choice(ghostList)
     
     # Find the closest power pellet
     def nearbyPowerPellet(self):
@@ -265,7 +265,7 @@ class Pacman(Entity):
     def huntGhostAstar(self,directions):
         goal = self.nearbyGhost()
         self.goal = goal.position
-        return self.seekAstar(directions, self.node, goal)
+        return self.seekAstar(directions, self.node, goal.target)
     
     
     def seekPowerPellet(self,directions):
