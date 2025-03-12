@@ -30,7 +30,6 @@ class Pacman(Entity):
         
         
         self.pellets = pellets.pelletList
-        #self.pelletpositions = [pellet.position for pellet in self.pellets]
         self.allPowerPellets = pellets.powerpellets
         
         self.statemachine = StateMachine(self,self.myState )
@@ -56,18 +55,20 @@ class Pacman(Entity):
         
         
     def update(self, dt):
-        #print("GOAL: ", self.goal)
+
         self.sprites.update(dt)
         
-        #self.goal = self.getClosestPowerPellet()
         
+        #Check for event each uodate
         self.statemachine.checkEvent(dt)
+        
+        #Update power pellets
         self.updatePowerPellets()
         
-        #Update 
+        #Update states
         self.stateChecker()
         
-        
+
         
         self.position += self.directions[self.direction]*self.speed*dt
         
@@ -86,8 +87,6 @@ class Pacman(Entity):
                 self.target = self.getNewTarget(self.direction)
 
             self.setPosition()
-
-
 
 
     def eatPellets(self, pelletList):
@@ -110,33 +109,32 @@ class Pacman(Entity):
     
     
     
-    # My code
+    # Sets pacman ghosts (GhostGroup) variable
     def setGhosts(self,ghosts):        
         self.ghosts = ghosts
 
         
-        
+    #Updates the powerPellets instance variable
     def updatePowerPellets(self):
         self.powerPellets = [pellet for pellet in self.pellets if pellet.alive and pellet.name == POWERPELLET]
         
         
-        #Finds the closest ghost to pacman. Using manhattan
+    #Finds the closest pellet to pacman
     def getClosestPellet(self):
         pellets = self.pellets
-        
         pacman_pos = self.position.asTuple()  #Get pacman pos as tuple
         
         visible_pellets = [pellet.position for pellet in pellets if pellet.visible]
         
 
-        if not visible_pellets: 
-            print("NONE PELLETS")
+        if not visible_pellets: # Level done
             return None
 
         closest_pellet = min(visible_pellets, key=lambda pellet: self.dist(pacman_pos, pellet.asTuple()))
         return closest_pellet
     
     
+    #Finds the closest 'alive' power pellet to pacman
     def getClosestPowerPellet(self):
         pacman_pos = self.position.asTuple()  #Get pacman pos as tuple
         
@@ -145,7 +143,7 @@ class Pacman(Entity):
         print("\n Visble power pellets: ", visible_pellets, "\n")
 
         if not visible_pellets: 
-            print("NONE POWER PELLETS")
+            print("NO POWER PELLETS")
             return None
 
         closest_pellet = min(visible_pellets, key=lambda pellet: self.dist(pacman_pos, pellet.asTuple()))
@@ -155,17 +153,15 @@ class Pacman(Entity):
     
 
     
-    
-    def dist(self,node1, node2):
     # manhattan distance
+    def dist(self,node1, node2):
         return abs(node1[0] - node2[0]) + abs(node1[1] - node2[1])
     
 
         
 
-    #Finding nearest ghosts
+    #Finding nearest ghosts for flee purpose
     def nearbyGhostFlee(self):
-        print("nearby")
         queue = []
         count = 0
         for ghost in self.ghosts:
@@ -182,13 +178,13 @@ class Pacman(Entity):
         return self.target
             
             
-        #Finding nearest ghosts
+    #Finding nearest ghost for hunting ghosts
     def nearbyGhost(self):
-        print("nearby")
         queue = []
         count = 0
         for ghost in self.ghosts:
             ret = ghost
+            # If ghost is not in FREIGHT we cant eat it
             if self.homeNodes(ghost) or ghost.mode.current != FREIGHT:
                 continue
 
@@ -201,9 +197,8 @@ class Pacman(Entity):
         
         return ret.node
     
-    
+    # Find the closest power pellet
     def nearbyPowerPellet(self):
-        
         queue = []
         
         self.updatePowerPellets()
@@ -218,7 +213,7 @@ class Pacman(Entity):
     
     
     
-        #Checking if a ghost is 'home'
+    #Checking if a ghost is 'home'
     def homeNodes(self, ghost):
         if ghost.node == ghost.homeNode or ghost.node == ghost.spawnNode:
             return True
@@ -233,8 +228,7 @@ class Pacman(Entity):
 
         
                 
-    
-         #Statchecker
+    #Check states and sets directionMethod accordingly
     def stateChecker(self):
         if self.myState == SEEKPOWERPELLET:
             if self.powerPellets:
@@ -254,13 +248,11 @@ class Pacman(Entity):
             
             
             
-            
+    #PAC MAN direction methods
     def flee(self,directions):
         self.goal = self.nearbyGhostFlee().position
         return self.goalDirectionFlee(directions)
     
-    
-    #PAC MAN direction methods
     
     def huntGhostAstar(self,directions):
         goal = self.nearbyGhost()

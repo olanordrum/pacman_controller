@@ -49,7 +49,7 @@ class StateMachine(object):
         if pellet is not None and pellet.alive:
             pellet.alive = False
             print(f"DEBUG: Power pellet spist: {pellet.position}")
-            self.time = 5  # Riktig tid
+            self.time = 6  # Riktig tid
             self.pacman.myState = SEEKGHOST
             
 
