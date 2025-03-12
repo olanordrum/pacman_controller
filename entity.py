@@ -94,7 +94,6 @@ class Entity(object):
     
     
     #Direction methods
-
     def goalDirection(self, directions):
         distances = []
         for direction in directions:
@@ -103,6 +102,7 @@ class Entity(object):
         index = distances.index(min(distances))
         return directions[index]
     
+    # Gives next direction away from self.goal
     def goalDirectionFlee(self, directions):
         distances = []
         for direction in directions:
@@ -111,13 +111,9 @@ class Entity(object):
         index = distances.index(max(distances))
         return directions[index]
     
-    def huntGhostEasy(self,directions):
-        self.goal = self.nearbyGhost().position
-        
-        return self.goalDirection(directions)
     
     
-    
+    #Gives next direction to closest pellet
     def seekPellet(self, directions):
         self.goal = self.getClosestPellet()
         distances = []
@@ -128,9 +124,8 @@ class Entity(object):
         return directions[index]
     
     
-    
+    #Gives next direction to closest powerpellet
     def seekPowerPelletEasy(self, directions):
-        print("\n POWER PELLETS: ",self.powerPellets)
         distances = []
         for direction in directions:
             vec = self.node.position  + self.directions[direction]*TILEWIDTH - self.goal
@@ -138,7 +133,7 @@ class Entity(object):
         index = distances.index(min(distances))
         return directions[index]
     
-    
+    #Gets path from start to goal using a star pathfinding
     def getAstarPath(self,start, goal):
         start = self.nodes.getPixelsFromNode(start)
         pacTarget = self.nodes.getPixelsFromNode(goal)
@@ -159,29 +154,25 @@ class Entity(object):
     
    
         
-        
+    #
     def seekAstar(self,directions,start, goal):
         start = start
         path = self.getAstarPath(start, goal)
         startprint = self.nodes.getPixelsFromNode(start)
         goalprint = self.nodes.getPixelsFromNode(goal)
-        #print("Start: ", startprint)
-        #print("Goal ", goalprint)
-        #print("Path: ", path)
-        
-    
-        target = self.nodes.getPixelsFromNode(goal)
-
-
+       
+       
+        if len(path) < 2 : #No path
+            return choice(self.validDirections())
 
         nextNode = path[1]
-        
         next = Vector2(nextNode[0],nextNode[1]) - start.position
 
         return self.getDirection(next,directions)
                
-               
-    def getDirection(self, goal,directions):
+    
+    #Takes a vector 2 and returns the direction
+    def getDirection(self, goal, directions):
         if abs(goal.x) > abs(goal.y):
             if goal.x > 0:
                 return RIGHT  
@@ -194,6 +185,7 @@ class Entity(object):
                 return UP 
         else:
             print("------ RANDOM DIRECTION ---------")
+            #return self.getDirection(self.goal,directions)
             return self.randomDirection(directions)
 
 

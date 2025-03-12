@@ -12,11 +12,11 @@ class StateMachine(object):
         
         
     # Checks if the closest ghost is closer than some threshold
-    def ghostClose(self):
+    def ghostClose(self,distance):
         res = False
         for ghost in self.pacman.ghosts:
           dist = self.pacman.dist(ghost.node.position.asTuple(),self.pacman.position.asTuple())
-          if dist < 100:
+          if dist < distance:
             res = True
         return res
     
@@ -27,7 +27,7 @@ class StateMachine(object):
         
         PP = self.pacman.nearbyPowerPellet()
         dist = self.pacman.dist(PP.position.asTuple(),self.pacman.position.asTuple())
-        if dist < 100:
+        if dist < 150:
             return True
         return False
 
@@ -40,7 +40,7 @@ class StateMachine(object):
         pellet = self.pacman.eatPellets(self.pacman.allPowerPellets)  
         
         #Bool: ghost distance < threshold
-        close = self.ghostClose()
+        close = self.ghostClose(100)
         
         #Bool: power pellet distance < threshold
         closePP = self.pelletClose()
