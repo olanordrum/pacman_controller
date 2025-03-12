@@ -173,9 +173,6 @@ class Entity(object):
         target = self.nodes.getPixelsFromNode(goal)
 
 
-        #path.append(target)
-        if len(path) < 2 :
-            return self.getDirection(self.goal,directions)
 
         nextNode = path[1]
         
