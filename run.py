@@ -62,7 +62,7 @@ class GameController(object):
         self.ghosts = GhostGroup(self.nodes.getStartTempNode(), self.pacman)
         
         self.pacman.setGhosts(self.ghosts)
-       # self.pacman.setPellets(self.pellets)
+
         
 
         self.ghosts.pinky.setStartNode(self.nodes.getNodeFromTiles(*self.mazedata.obj.addOffset(2, 3)))
