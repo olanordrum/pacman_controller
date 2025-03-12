@@ -19,7 +19,18 @@ class StateMachine(object):
           if dist < 100:
             res = True
         return res
-      
+    
+    # Checks if the closest power pellet is closer than some threshold
+    def pelletClose(self):
+        if not self.pacman.powerPellets:
+            return False
+        
+        PP = self.pacman.nearbyPowerPellet()
+        dist = self.pacman.dist(PP.position.asTuple(),self.pacman.position.asTuple())
+        if dist < 100:
+            return True
+        return False
+
       
     # Checks for events and changes pacman states according to event
     def checkEvent(self, dt):
@@ -30,6 +41,10 @@ class StateMachine(object):
         
         #Bool: ghost distance < threshold
         close = self.ghostClose()
+        
+        #Bool: power pellet distance < threshold
+        closePP = self.pelletClose()
+            
         # If pacman eats power pellet, seek ghost
         if pellet is not None and pellet.alive:
             pellet.alive = False
@@ -52,10 +67,13 @@ class StateMachine(object):
 
         # If flee-state, check if we should stop
         if self.pacman.myState == FLEE:
-            self.flee_time -= dt
-            if self.flee_time <= 0 or not close:
+            #seek power pellet if its close
+            if closePP:
                 self.pacman.myState = SEEKPOWERPELLET
                 
+            else:
+                self.flee_time -= dt
+                if self.flee_time <= 0 or not close:
                     self.pacman.myState = SEEKPOWERPELLET
                 
           
