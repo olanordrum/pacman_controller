@@ -26,8 +26,8 @@ class Pacman(Entity):
         self.goal = Vector2()
         
         #States
-        self.states = [SEEKPOWERPELLET,SEEKGHOST,FLEE]
-        self.myState = SEEKPOWERPELLET #Current state
+        self.states = [SEEKPOWERPELLET,SEEKPELLET,SEEKGHOST,FLEE]
+        self.myState = SEEKPELLET #Current state
         
         
         
@@ -45,7 +45,7 @@ class Pacman(Entity):
         self.alive = True
         self.image = self.sprites.getStartImage()
         self.sprites.reset()
-        self.myState = SEEKPOWERPELLET
+        self.myState = SEEKPELLET
         self.updatePowerPellets()
 
     def die(self):
@@ -234,13 +234,17 @@ class Pacman(Entity):
                 
     #Check states and sets directionMethod accordingly
     def stateChecker(self):
-        if self.myState == SEEKPOWERPELLET:
+        if self.myState == SEEKPELLET:
+            print("\n STATE: PELLET \n")
+            self.directionMethod = self.seekPellet
+            
+        elif self.myState == SEEKPOWERPELLET:
             if self.powerPellets:
                 print("\n STATE: POWERPELLET \n")
                 self.directionMethod = self.seekPowerPellet
             else:
-                print("\n STATE: PELLET \n")
-                self.directionMethod = self.seekPellet #A*
+                self.myState = SEEKPELLET
+                self.directionMethod = self.seekPellet
             
         elif self.myState == SEEKGHOST:
             print("\n STATE: SEEKGHOST \n")
