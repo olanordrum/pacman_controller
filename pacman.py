@@ -22,8 +22,10 @@ class Pacman(Entity):
         self.nodes = nodes # all nodes
     
         
-        self.directionMethod = self.goalDirectionFlee
+        self.directionMethod = self.seekPellet
+        
         self.goal = Vector2()
+        
         
         #States
         self.states = [SEEKPOWERPELLET,SEEKPELLET,SEEKGHOST,FLEE]
@@ -34,7 +36,7 @@ class Pacman(Entity):
         self.pellets = pellets.pelletList
         self.allPowerPellets = pellets.powerpellets
         
-        self.statemachine = StateMachine(self,self.myState )
+        self.statemachine = StateMachine(self)
         
         
 
@@ -64,8 +66,6 @@ class Pacman(Entity):
         #Check for event each uodate
         self.statemachine.checkEvent(dt)
         
-        #Update power pellets
-        self.updatePowerPellets()
         
         #Update states
         self.stateChecker()
@@ -74,7 +74,6 @@ class Pacman(Entity):
         
         self.position += self.directions[self.direction]*self.speed*dt
         
-         
         if self.overshotTarget():
             self.node = self.target
             directions = self.validDirections()
@@ -166,7 +165,9 @@ class Pacman(Entity):
     def nearbyGhostFlee(self):
         queue = []
         count = 0
-        for ghost in self.ghosts:
+        ghostList = [ghost for ghost in self.ghosts]
+        
+        for ghost in ghostList:
             if self.homeNodes(ghost):
                 continue
 
@@ -187,7 +188,6 @@ class Pacman(Entity):
         ghostList = [ghost for ghost in self.ghosts]
         
         for ghost in ghostList:
-            ret = ghost
             # If ghost is not in FREIGHT we cant eat it
             if self.homeNodes(ghost) or ghost.mode.current != FREIGHT:
                 continue
@@ -264,7 +264,7 @@ class Pacman(Entity):
     
     def huntGhostAstar(self,directions):
         goal = self.nearbyGhost()
-        self.goal = goal.position
+        self.goal = goal.target
         return self.seekAstar(directions, self.node, goal.target)
     
     

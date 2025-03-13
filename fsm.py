@@ -6,7 +6,7 @@ from pacman import *
 
 # Controlls pacman behavior according to events
 class StateMachine(object):
-    def __init__(self, pacman,state):
+    def __init__(self, pacman):
         self.pacman = pacman
         self.time = 7
         
@@ -21,39 +21,47 @@ class StateMachine(object):
         return res
     
     # Checks if the closest power pellet is closer than some threshold
-    def pelletClose(self):
+    def pelletClose(self,distance):
         if not self.pacman.powerPellets:
             return False
         
         PP = self.pacman.nearbyPowerPellet()
         dist = self.pacman.dist(PP.position.asTuple(),self.pacman.position.asTuple())
-        if dist < 150:
+        if dist < distance:
             return True
         return False
 
+
+
+
+
+ 
       
     # Checks for events and changes pacman states according to event
     def checkEvent(self, dt):
         self.pacman.updatePowerPellets()
         
         # Eaten pellet
-        pellet = self.pacman.eatPellets(self.pacman.allPowerPellets)  
+        pelletEaten = self.pacman.eatPellets(self.pacman.allPowerPellets)  
+        
         
         #Bool: ghost distance < threshold
         close = self.ghostClose(100)
         
         #Bool: power pellet distance < threshold
-        closePP = self.pelletClose()
+        closePP = self.pelletClose(150)
+        
+        
+        
         #seek power pellet if its close
         if closePP:
             self.pacman.myState = SEEKPOWERPELLET
         
             
         # If pacman eats power pellet, seek ghost
-        if pellet is not None and pellet.alive:
-            pellet.alive = False
-            print(f"DEBUG: Power pellet spist: {pellet.position}")
-            self.time = 6  # Riktig tid
+        if pelletEaten is not None and pelletEaten.alive:
+            pelletEaten.alive = False
+            self.time = 6  # Seek time
             self.pacman.myState = SEEKGHOST
             
 

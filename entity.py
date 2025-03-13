@@ -138,7 +138,6 @@ class Entity(object):
         start = self.nodes.getPixelsFromNode(start)
         pacTarget = self.nodes.getPixelsFromNode(goal)
 
-        # previous_nodes, shortest_path = dijkstra(self.nodes, pacTarget)
         previous_nodes, shortest_path = a_star(
             self.nodes, start, pacTarget
         )
@@ -147,20 +146,15 @@ class Entity(object):
         while node != None:
             path.append(node)
             node = previous_nodes[node]
-        #path.append(pacTarget)
+
         path.reverse()
-        # print(path)
         return path
     
    
         
-    #
     def seekAstar(self,directions,start, goal):
         start = start
         path = self.getAstarPath(start, goal)
-        startprint = self.nodes.getPixelsFromNode(start)
-        goalprint = self.nodes.getPixelsFromNode(goal)
-       
        
         if len(path) < 2 : #No path
             return choice(self.validDirections())
@@ -170,6 +164,8 @@ class Entity(object):
 
         return self.getDirection(next,directions)
                
+    
+    
     
     #Takes a vector 2 and returns the direction
     def getDirection(self, goal, directions):
@@ -184,8 +180,6 @@ class Entity(object):
             else:
                 return UP 
         else:
-            print("------ RANDOM DIRECTION ---------")
-            #return self.getDirection(self.goal,directions)
             return self.randomDirection(directions)
 
 
