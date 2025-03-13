@@ -63,11 +63,11 @@ class Pacman(Entity):
         self.sprites.update(dt)
         
         
-        #Check for event each uodate
+        #Check for event and update states each update
         self.statemachine.checkEvent(dt)
         
         
-        #Update states
+        #Update direction methods according to states
         self.stateChecker()
         
 
@@ -108,9 +108,7 @@ class Pacman(Entity):
         return False
     
     
-    
-    
-    # Sets pacman ghosts (GhostGroup) variable
+    #Sets pacman ghosts (GhostGroup) instancevariable
     def setGhosts(self,ghosts):        
         self.ghosts = ghosts
 
@@ -140,11 +138,8 @@ class Pacman(Entity):
         pacman_pos = self.position.asTuple()  #Get pacman pos as tuple
         
         visible_pellets = [pellet.position for pellet in self.powerPellets if pellet.alive and pellet.name == POWERPELLET]
-        
-        print("\n Visble power pellets: ", visible_pellets, "\n")
 
         if not visible_pellets: 
-            print("NO POWER PELLETS")
             return None
 
         closest_pellet = min(visible_pellets, key=lambda pellet: self.dist(pacman_pos, pellet.asTuple()))
@@ -207,6 +202,7 @@ class Pacman(Entity):
         
         self.updatePowerPellets()
         
+        #Adding unique count value to every tuple, in case of equal dist. 
         count = 0
         for pellet in self.powerPellets:
             dist = (pellet.node.position - self.node.position).magnitudeSquared()
@@ -218,6 +214,7 @@ class Pacman(Entity):
     
     
     #Checking if a ghost is 'home'
+    #In that case we do not want to seek that ghost
     def homeNodes(self, ghost):
         if ghost.node == ghost.homeNode or ghost.node == ghost.spawnNode:
             return True
@@ -235,23 +232,19 @@ class Pacman(Entity):
     #Check states and sets directionMethod accordingly
     def stateChecker(self):
         if self.myState == SEEKPELLET:
-            print("\n STATE: PELLET \n")
             self.directionMethod = self.seekPellet
             
         elif self.myState == SEEKPOWERPELLET:
             if self.powerPellets:
-                print("\n STATE: POWERPELLET \n")
                 self.directionMethod = self.seekPowerPellet
             else:
                 self.myState = SEEKPELLET
                 self.directionMethod = self.seekPellet
             
         elif self.myState == SEEKGHOST:
-            print("\n STATE: SEEKGHOST \n")
             self.directionMethod = self.huntGhostAstar
             
         elif self.myState == FLEE:
-            print("\n STATE: FLEE \n")
             self.directionMethod = self.flee
             
             
