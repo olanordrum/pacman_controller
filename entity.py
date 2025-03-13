@@ -133,7 +133,7 @@ class Entity(object):
         index = distances.index(min(distances))
         return directions[index]
     
-    #Gets path from start to goal using a star pathfinding
+    #Gets path from start to goal using a* pathfinding
     def getAstarPath(self,start, goal):
         start = self.nodes.getPixelsFromNode(start)
         pacTarget = self.nodes.getPixelsFromNode(goal)
@@ -157,7 +157,7 @@ class Entity(object):
         path = self.getAstarPath(start, goal)
        
         if len(path) < 2 : #No path
-            return choice(self.validDirections())
+            return choice(self.validDirections()) #Choose between valid directions
 
         nextNode = path[1]
         next = Vector2(nextNode[0],nextNode[1]) - start.position
@@ -167,7 +167,7 @@ class Entity(object):
     
     
     
-    #Takes a vector 2 and returns the direction
+    #Takes a vector2 and returns the direction
     def getDirection(self, goal, directions):
         if abs(goal.x) > abs(goal.y):
             if goal.x > 0:
